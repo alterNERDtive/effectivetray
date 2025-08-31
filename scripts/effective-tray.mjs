@@ -107,7 +107,6 @@ export class EffectiveTray {
 
         // Replace the effects tray
         const effectApplication = document.createElement("effective-effect-application");
-        effectApplication.classList.add("dnd5e2");
         effectApplication.effects = effects;
         return html.querySelector(".message-content").appendChild(effectApplication);
       }
