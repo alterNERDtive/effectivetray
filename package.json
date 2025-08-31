@@ -6,17 +6,17 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/etiquettestartshere/effectivetray.git"
+    "url": "git+https://github.com/alterNERDtive/effectivetray.git"
   },
   "keywords": [
     "fvtt",
     "module"
   ],
-  "author": "alakshana",
+  "author": "alterNERDtive",
   "bugs": {
-    "url": "https://github.com/etiquettestartshere/effectivetray"
+    "url": "https://github.com/alterNERDtive/effectivetray"
   },
-  "homepage": "https://github.com/etiquettestartshere/effectivetray",
+  "homepage": "https://github.com/alterNERDtive/effectivetray",
   "devDependencies": {
     "rollup": "^4.22.4"
   }

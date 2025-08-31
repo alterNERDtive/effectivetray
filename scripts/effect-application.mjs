@@ -8,6 +8,14 @@ import { EffectiveTray } from "./effective-tray.mjs";
 
 export default class EffectiveEAE extends dnd5e.applications.components.EffectApplicationElement {
 
+  /* This breaks https://github.com/foundryvtt/dnd5e/pull/5842
+   * (fix for performance issues with large chat logs).
+   * Unfortunately there is nothing I can do about that since
+   * ChatLog5e#onCardIntersects is private and can’t be modified,
+   * so this.visible is always false.
+  /** @override */
+  get shouldBuildTargetList() { return true;}
+
   /* -------------------------------------------- */
   /*  Rendering                                   */
   /* -------------------------------------------- */
@@ -76,14 +84,16 @@ export default class EffectiveEAE extends dnd5e.applications.components.EffectAp
     li.classList.add("target");
     li.dataset.targetUuid = uuid;
     li.innerHTML = `
-      <img class="gold-icon" alt="${name}" src="${actor.img}">
+      <img class="gold-icon">
       <div class="name-stacked">
-        <span class="title">${name}</span>
+        <span class="title"></span>
       </div>
       <div class="checkbox">
         <dnd5e-checkbox name="${uuid}"${checked}${disabled}></dnd5e-checkbox>
       </div>
     `;
+    Object.assign(li.querySelector(".gold-icon"), { alt: name, src: actor.img });
+    li.querySelector(".name-stacked .title").append(name);
 
     return li;
   }
