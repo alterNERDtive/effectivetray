@@ -1,3 +1,7 @@
+# devel
+
+* fixed settings not working for new module ID
+
 # 5.1.1 (2025-09-01)
 
 * changed module ID as requested by original author

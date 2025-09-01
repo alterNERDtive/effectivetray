@@ -1,2 +1,2 @@
-export const MODULE = "effectivetray";
-export const SOCKET_ID = "module.effectivetray";
+export const MODULE = "effectivetray-ng";
+export const SOCKET_ID = "module.effectivetray-ng";
