@@ -1,6 +1,7 @@
 # devel
 
 * changed module ID as requested by original author
+* less aggressive fix for showing the target list
 
 # 5.1.0 (2025-08-31)
 
