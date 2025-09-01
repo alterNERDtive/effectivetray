@@ -14,7 +14,9 @@ export default class EffectiveEAE extends dnd5e.applications.components.EffectAp
    * ChatLog5e#onCardIntersects is private and can’t be modified,
    * so this.visible is always false.
   /** @override */
-  get shouldBuildTargetList() { return true;}
+  get shouldBuildTargetList() {
+    return this.open;
+  }
 
   /* -------------------------------------------- */
   /*  Rendering                                   */
