@@ -1,7 +1,7 @@
 {
-  "id": "effectivetray",
-  "title": "Effective Tray",
-  "version": "5.1.0",
+  "id": "effectivetray-ng",
+  "title": "Effective Tray NG",
+  "version": "5.1.1",
   "compatibility": {
     "minimum": "13",
     "verified": "13.348"
@@ -31,12 +31,6 @@
   "manifest": "https://github.com/alterNERDtive/effectivetray/releases/latest/download/module.json",
   "download": "https://github.com/alterNERDtive/effectivetray/releases/latest/download/module.zip",
   "authors": [
-    {
-      "name": "alakshana",
-      "discord": "alakshana",
-      "url": "https://github.com/etiquettestartshere",
-      "flags": {}
-    },
     {
       "name": "alterNERDtive",
       "discord": "alternerdtive",

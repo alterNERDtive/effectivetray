@@ -1,3 +1,7 @@
+# devel
+
+* changed module ID as requested by original author
+
 # 5.1.0 (2025-08-31)
 
 * updated for D&D 5.1
