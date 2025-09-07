@@ -21,12 +21,9 @@ jobs:
         id: get_version
         uses: battila7/get-version-action@v2
 
-      # Substitute the Manifest and Download URLs in the module.json
-      # for a FULL RELEASE
-      # Remove HotReload and update version and download properties.
-      - name: Modify Manifest to remove HotReload
-        if: '!github.event.release.prerelease'
-        id: sub_release_manifest_version
+      # Substitute URLs in the module manifest
+      - name: Substitute manifest URLs
+        id: sub_manifest_urls
         uses: microsoft/variable-substitution@v1
         with:
           files: "module.json"
@@ -34,25 +31,10 @@ jobs:
           flags.hotReload: false
           version: ${{steps.get_version.outputs.version-without-v}}
           url: https://github.com/${{github.repository}}
-          manifest: https://github.com/${{github.repository}}/releases/latest/download/module.json
+          bugs: https://github.com/${{github.repository}}/issues
+          changelog: https://github.com/${{github.repository}}/releases/tag/${{github.event.release.tag_name}}
           download: https://github.com/${{github.repository}}/releases/download/${{github.event.release.tag_name}}/module.zip
-          styles: "[\"effectivetray.css\"]"
-          esmodules: "[\"effectivetray.mjs\"]"
-
-      # Substitute the Manifest and Download URLs in the module.json
-      # for a PRE RELEASE.
-      - name: Substitute Manifest and Download Links For Versioned Ones
-        if: 'github.event.release.prerelease'
-        id: sub_prerelease_manifest_version
-        uses: microsoft/variable-substitution@v1
-        with:
-          files: "module.json"
-        env:
-          flags.hotReload: false
-          version: ${{steps.get_version.outputs.version-without-v}}
-          url: https://github.com/${{github.repository}}
           manifest: https://github.com/${{github.repository}}/releases/latest/download/module.json
-          download: https://github.com/${{github.repository}}/releases/download/${{github.event.release.tag_name}}/module.zip
           styles: "[\"effectivetray.css\"]"
           esmodules: "[\"effectivetray.mjs\"]"
 
@@ -70,11 +52,11 @@ jobs:
 
       # Run build scripts
       - name: Build All
-        run: npm run build    
+        run: npm run build
 
       # Create zip file.
       - name: Create ZIP archive
-        run: zip -r ./module.zip module.json effectivetray.mjs effectivetray.css lang/
+        run: zip -r ./module.zip module.json effectivetray.mjs effectivetray.css lang/ LICENSE CHANGELOG.md README.md
 
       # Create a release for this specific version.
       - name: Update Release with Files
@@ -105,3 +87,12 @@ jobs:
           artifacts: "./module.json, ./module.zip"
           tag: ${{ github.event.release.tag_name }}
           body: ${{ github.event.release.body }}
+
+      # Publish package to the Foundry module list
+      - name: Publish Foundry package
+        if: '!github.event.release.prerelease'
+        id: publish_foundry_package
+        uses: cs96and/FoundryVTT-release-package@v1
+        with:
+          package-token: ${{ secrets.PACKAGE_TOKEN }}
+          manifest-url: https://github.com/${{github.repository}}/releases/download/${{github.event.release.tag_name}}/module.json
