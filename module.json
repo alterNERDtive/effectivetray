@@ -4,16 +4,25 @@
   "version": "5.1.3",
   "compatibility": {
     "minimum": "13",
-    "verified": "13.348"
+    "verified": "13.348",
+    "maximum": "13.999"
   },
-  "esmodules": ["scripts/setup.mjs"],
-  "styles": ["styles/effectivetray.css"],
+  "esmodules": [
+    "scripts/setup.mjs"
+  ],
+  "styles": [
+    "styles/effectivetray.css"
+  ],
   "relationships": {
     "systems": [
       {
         "id": "dnd5e",
         "type": "system",
-        "compatibility": {"minimum": "5.1.0", "maximum": "5.1.9999"}
+        "compatibility": {
+          "minimum": "5.1.0",
+          "verified": "5.1.4",
+          "maximum": "5.1.9999"
+        }
       }
     ]
   },
@@ -25,11 +34,26 @@
       "flags": {}
     }
   ],
-  "flags": {"hotReload": {"extensions": ["css", "json"], "paths": ["styles/effectivetray.css", "lang"]}},
+  "flags": {
+    "hotReload": {
+      "extensions": [
+        "css",
+        "json"
+      ],
+      "paths": [
+        "styles/effectivetray.css",
+        "lang"
+      ]
+    }
+  },
   "socket": true,
   "url": "https://github.com/alterNERDtive/effectivetray",
-  "manifest": "https://github.com/alterNERDtive/effectivetray/releases/latest/download/module.json",
-  "download": "https://github.com/alterNERDtive/effectivetray/releases/latest/download/module.zip",
+  "bugs": "https://github.com/alterNERDtive/effectivetray/issues/",
+  "changelog": "https://github.com/alterNERDtive/effectivetray/releases/latest/",
+  "download": "https://github.com/alterNERDtive/effectivetray/archive/refs/heads/main.zip",
+  "manifest": "https://github.com/alterNERDtive/effectivetray/raw/refs/heads/main/module.json",
+  "license": "LICENSE",
+  "readme": "README.md",
   "authors": [
     {
       "name": "alterNERDtive",
