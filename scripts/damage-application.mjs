@@ -10,16 +10,6 @@ const MULTIPLIERS = [[-1, "-1"], [0, "0"], [.25, "¼"], [.5, "½"], [1, "1"], [2
 
 export default class EffectiveDAE extends dnd5e.applications.components.DamageApplicationElement {
 
-  /* This breaks https://github.com/foundryvtt/dnd5e/pull/5842
-   * (fix for performance issues with large chat logs).
-   * Unfortunately there is nothing I can do about that since
-   * ChatLog5e#onCardIntersects is private and can’t be modified,
-   * so this.visible is always false.
-  /** @override */
-  get shouldBuildTargetList() {
-    return this.open;
-  }
-
   /* -------------------------------------------- */
   /*  Rendering                                   */
   /* -------------------------------------------- */

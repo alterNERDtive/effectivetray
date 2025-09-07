@@ -3,6 +3,12 @@ import { MODULE } from "./const.mjs";
 export class EffectiveTray {
   static init() {
 
+    // Register trays for visiblity checking in the chat log
+    Hooks.once("init", () => {
+        dnd5e.documents.ChatMessage5e.TRAY_TYPES.push("effective-damage-application", "effective-effect-application");
+      }
+    )
+
     // Override header click behavior
     if (game.settings.get(MODULE, "dontCloseOnPress")) {
       EffectiveTray._effectTrayClickOverride();
