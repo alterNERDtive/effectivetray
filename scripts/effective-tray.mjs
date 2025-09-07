@@ -89,7 +89,6 @@ export class EffectiveTray {
           if (message.getFlag("dnd5e", "roll.type")) return;
           effects = item?.effects.filter(e => (e.type !== "enchantment") && !e.getFlag("dnd5e", "rider"));
         }
-        effects = effects?.filter(e => !e.transfer);
         if (!effects?.length || foundry.utils.isEmpty(effects)) return;
         if (!effects.some(e => e.type !== "enchantment")) return;
         const actor = message.getAssociatedActor();
