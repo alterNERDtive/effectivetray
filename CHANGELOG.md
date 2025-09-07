@@ -1,4 +1,4 @@
-# devel
+# 5.1.3 (2025-09-07)
 
 * fixed damage application tray not showing for players (#5)
 
