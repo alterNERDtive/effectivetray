@@ -1,3 +1,7 @@
+# devel
+
+* fixed damage application tray not showing for players (#5)
+
 # 5.1.2 (2025-09-01)
 
 * fixed settings not working for new module ID
