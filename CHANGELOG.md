@@ -3,6 +3,8 @@
 * changed version scheme to include verified Foundry and 5e system versions (similar to https://github.com/thatlonelybugbear/automated-conditions-5e)
 * no longer bypasses system performance improvements (#6)
 * transfer effects (“apply effect to actor”) can now be applied via the tray; this includes applying to other actors
+* new setting to allow applying transfer effects (“Apply Effect to Actor”) via the tray; this includes applying to other actors(!) (enabled by default)
+* “Remove ‘Apply Effect to Actor’” setting now disabled by default
 
 # 5.1.3 (2025-09-07)
 

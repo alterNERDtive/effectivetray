@@ -29,6 +29,17 @@ export class ModuleSettings {
       onChange: false
     });
 
+    game.settings.register(MODULE, "allowTransfer", {
+      name: "EFFECTIVETRAY.AllowTransferSettingName",
+      hint: "EFFECTIVETRAY.AllowTransferSettingHint",
+      scope: "world",
+      config: true,
+      type: Boolean,
+      default: true,
+      requiresReload: false,
+      onChange: false
+    });
+
     game.settings.register(MODULE, "deleteInstead", {
       name: "EFFECTIVETRAY.DeleteInsteadSettingName",
       hint: "EFFECTIVETRAY.DeleteInsteadSettingHint",
@@ -145,7 +156,7 @@ export class ModuleSettings {
       scope: "world",
       config: true,
       type: Boolean,
-      default: true,
+      default: false,
       requiresReload: false,
       onChange: false
     });
