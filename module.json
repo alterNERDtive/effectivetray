@@ -1,7 +1,7 @@
 {
   "id": "effectivetray-ng",
   "title": "Effective Tray NG",
-  "version": "13.348-5.1.4-1",
+  "version": "13.348-5.1.5-1",
   "compatibility": {
     "minimum": "13",
     "verified": "13.348",
@@ -19,8 +19,8 @@
         "id": "dnd5e",
         "type": "system",
         "compatibility": {
-          "minimum": "5.1.0",
-          "verified": "5.1.4",
+          "minimum": "5.1.5",
+          "verified": "5.1.5",
           "maximum": "5.1.9999"
         }
       }

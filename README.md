@@ -9,13 +9,14 @@ Allows users to use the damage tray for selected tokens that they own, and for t
 ## Settings
 - **Transfer to Target**: Allow users to transfer effects to targets they do not own (off by default).
 - **Damage Target**: Allow users to damage targets that they don't own with the damage tray (off by default).
+- **Allow Application of Transfer Effects**: Allows applying effects that have the “Apply to Actor” option set, e.g. the Rage effect from the SRD; will allow applying these to other actors(!) as well. Will apply a *copy* of the effect. If you set this, you probably want to disable the “Remove ‘Apply Effect to Actor’” setting (on by default).
 - **Delete Instead of Refresh**: Attempting to transfer an effect to an actor that has it already will delete it rather than refreshing its duration (off by default).
 - **Filtering** based on actor type, permissions, and token disposition. This prevents users from seeing and interacting with effects of certain origins, depending on GM preference (no filtering is performed by default).
 - **Multiple Effects with Concentration**: Allow multiple effects to be applied from spells with concentration (off by default).
 - **Use Default Trays**: Adds settings (off by default) to use the default effects and damage trays. Only the features *below* this setting will function if a given tray is in its default mode.
 - **Don't Close Trays on Apply**: Don't automatically close trays when hitting submit. Won't work with default effects tray (now off by default).
 - **Scroll on Expand**: Scroll chat to bottom when expanding a tray that is at the bottom (experimental, on by default).
-- **Remove 'Apply Effect to Actor'**: On the time of creation (i.e. drag & drop, item grant advancement), remove 'Apply Effect to Actor' from effects on items that have a duration to allow for normal use of the timer (on by default).
+- **Remove 'Apply Effect to Actor'**: On the time of creation (i.e. drag & drop, item grant advancement), remove 'Apply Effect to Actor' from effects on items that have a duration to allow for normal use of the timer (off by default).
 
 ## Additional Features
 - Flags enchantment effects with their spellLevel.
