@@ -1,6 +1,7 @@
 # devel
 
 * changed version scheme to include verified Foundry and 5e system versions (similar to https://github.com/thatlonelybugbear/automated-conditions-5e)
+* no longer bypasses system performance improvements (#6)
 
 # 5.1.3 (2025-09-07)
 
