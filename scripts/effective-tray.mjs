@@ -4,7 +4,7 @@ export class EffectiveTray {
   static init() {
 
     // Register trays for visiblity checking in the chat log
-    Hooks.once("init", () => {
+    Hooks.once("setup", () => {
         dnd5e.documents.ChatMessage5e.TRAY_TYPES.push("effective-damage-application", "effective-effect-application");
       }
     )
