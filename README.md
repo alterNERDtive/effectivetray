@@ -1,5 +1,7 @@
-# Effective Tray (for D&D Fifth Edition)
+# Effective Tray NG (for D&D Fifth Edition)
 A module for dnd5e on foundryvtt that allows the effects and damage trays to be used more effectively.
+
+Based on [Effective Tray](https://github.com/etiquettestartshere/effectivetray) by [@etiquettestartshere](https://github.com/etiquettestartshere).
 
 ## Effects Tray 
 Allows users to use the effect tray as much or as little as wanted by the GM, up to and including transferal to targets they do not own. User ability to transfer effects to and from any target is on by default.
