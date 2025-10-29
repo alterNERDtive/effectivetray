@@ -19,6 +19,7 @@
 // </copyright>
 
 import { MODULE } from "./const.mjs";
+import EffectiveDamageApplication from "./damage-application.mjs";
 
 export class EffectiveTray {
   static init() {
@@ -39,17 +40,17 @@ export class EffectiveTray {
 
     // Modify the damage tray
     if (!game.settings.get(MODULE, "damageDefault")) {
-      Hooks.on("dnd5e.renderChatMessage", EffectiveTray._damageTray);
+      EffectiveDamageApplication.init();
     }
 
     // Handle expand/collapse/scroll
-    Hooks.on("dnd5e.renderChatMessage", EffectiveTray._collapseHandler);
+    //Hooks.on("dnd5e.renderChatMessage", EffectiveTray._collapseHandler);
 
     // Handle the system's expand/collapse logic
-    Hooks.on("dnd5e.renderChatMessage", EffectiveTray._collapseTrays);
+    //Hooks.on("dnd5e.renderChatMessage", EffectiveTray._collapseTrays);
     const collapseSetting = game.settings.get("dnd5e", "autoCollapseChatTrays")
     if (collapseSetting === "older" || collapseSetting === "never") {
-      Hooks.on("ready", EffectiveTray._readyScroll);
+      //Hooks.on("ready", EffectiveTray._readyScroll);
     }
 
     // Misc
@@ -63,8 +64,7 @@ export class EffectiveTray {
      * @param {HTMLLiElement} html  The chat card.
      * @protected
      */
-    libWrapper.register("effectivetray-ng", "dnd5e.documents.ChatMessage5e.prototype._enrichUsageEffects", function(...args) {
-      const html = args[0]; // I have no idea why referring to the parameter by name doesn’t work …
+    libWrapper.register("effectivetray-ng", "dnd5e.documents.ChatMessage5e.prototype._enrichUsageEffects", function(html) {
       const message = this;
       const item = message.getAssociatedItem();
       if (!item) return;
@@ -117,25 +117,6 @@ export class EffectiveTray {
     if (game.user.id !== userId) return;
     const concentration = await fromUuid(concentrationUuid);
     if (concentration) concentration.addDependent(effect);
-  }
-
-  /**
-   * Add the damage tray for players.
-   * @param {ChatMessage5e} message The message on which the tray resides.
-   * @param {HTMLElement} html      HTML contents of the message.
-   */
-  static _damageTray(message, html) {
-    if (!message.isContentVisible || game.user.isGM) return;
-    const rolls = message.rolls.filter(r => r instanceof CONFIG.Dice.DamageRoll);
-    if (!rolls.length) return;
-    const damageApplication = document.createElement("effective-damage-application");
-    damageApplication.classList.add("dnd5e2");
-    damageApplication.damages = dnd5e.dice.aggregateDamageRolls(rolls, { respectProperties: true }).map(roll => ({
-      value: roll.total,
-      type: roll.options.type,
-      properties: new Set(roll.options.properties ?? [])
-    }));
-    html.querySelector(".message-content").appendChild(damageApplication);
   }
 
   /**
