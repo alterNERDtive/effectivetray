@@ -26,43 +26,91 @@ import { EffectiveTray } from "./effective-tray.mjs";
 /*  Refer to dnd5e for full documentation       */
 /* -------------------------------------------- */
 
-export default class EffectiveEAE extends dnd5e.applications.components.EffectApplicationElement {
+export default class EffectiveEffectApplication {
+  static init() {
+    /**
+     * Override the display of the effects tray with effects the user can apply.
+     * Refer to dnd5e for full documentation.
+     * @param {HTMLLiElement} html  The chat card.
+     * @protected
+     */
+    libWrapper.register("effectivetray-ng", "dnd5e.documents.ChatMessage5e.prototype._enrichUsageEffects", function(html) {
+      const item = this.getAssociatedItem();
 
-  /* -------------------------------------------- */
-  /*  Rendering                                   */
-  /* -------------------------------------------- */
+      // Additional effect detection
+      let effects;
+      if (this.getFlag("dnd5e", "messageType") === "usage") {
+        effects = this?.getFlag("dnd5e", "use.effects")?.map(id => item?.effects.get(id))
+      } else {
+        if (this.getFlag("dnd5e", "roll.type")) return;
+        effects = item?.effects.filter(e => (e.type !== "enchantment") && !e.getFlag("dnd5e", "rider"));
+      }
+      if (!effects?.length || foundry.utils.isEmpty(effects)) return;
+      if (!effects.some(e => e.type !== "enchantment")) return;
 
-  /** @override */
-  connectedCallback() {
-    // Fetch the associated chat message
-    const messageId = this.closest("[data-message-id]")?.dataset.messageId;
-    this.chatMessage = game.messages.get(messageId);
-    if (!this.chatMessage) return;
+      // Handle filtering based on actor
+      const actor = this.getAssociatedActor();
+      if (game.settings.get(MODULE, "ignoreNPC") && actor?.type === "npc" && !actor?.isOwner) return;
+      const filterDis = game.settings.get(MODULE, "filterDisposition");
+      if (filterDis) {
+        const token = game.scenes?.get(this.speaker?.scene)?.tokens?.get(this.speaker?.token);
+        if (token && filterDis === 3 && token.disposition <= CONST.TOKEN_DISPOSITIONS.NEUTRAL && !token?.isOwner) return;
+        else if (token && filterDis === 2 && token.disposition <= CONST.TOKEN_DISPOSITIONS.HOSTILE && !token?.isOwner) return;
+        else if (token && filterDis === 1 && token.disposition <= CONST.TOKEN_DISPOSITIONS.SECRET && !token?.isOwner) return;
+      }
+      const filterPer = game.settings.get(MODULE, "filterPermission");
+      if (filterPer) {
+        if (filterPer === 1 && !actor?.testUserPermission(game.user, CONST.DOCUMENT_OWNERSHIP_LEVELS.LIMITED)) return;
+        else if (filterPer === 2 && !actor?.testUserPermission(game.user, CONST.DOCUMENT_OWNERSHIP_LEVELS.OBSERVER)) return;
+        else if (filterPer === 3 && !actor?.isOwner) return;
+        else if (filterPer === 4 && !game.user.isGM) return;
+      }
 
-    // Build the frame HTML only once
-    if (!this.effectsList || !this.targetList) {
-      const div = document.createElement("div");
-      div.classList.add("card-tray", "effects-tray", "collapsible", "effective-tray");
-      if (!this.open) div.classList.add("collapsed");
-      div.innerHTML = `
-        <label class="roboto-upper">
-          <i class="fa-solid fa-bolt"></i>
-          <span>${game.i18n.localize("DND5E.Effects")}</span>
-          <i class="fa-solid fa-caret-down"></i>
-        </label>
-        <div class="collapsible-content">
-          <div class="wrapper">
-            <hr>
-            <menu class="effects unlist"></menu>
-          </div>
+      const effectApplication = document.createElement("effect-application");
+      effectApplication.effects = effects;
+      return html.querySelector(".message-content").appendChild(effectApplication);
+    }, libWrapper.OVERRIDE);
+
+    /**
+     * Handle applying an Active Effect to a Token.
+     * @param {ActiveEffect5e} effect      The effect to apply.
+     * @param {Actor5e} actor              The actor.
+     * @returns {Promise<ActiveEffect5e>}  The created effect.
+     * @protected
+     */
+    libWrapper.register("effectivetray-ng", "dnd5e.applications.components.EffectApplicationElement.prototype._applyEffectToActor", function(effect, actor, { effectData, concentration }) {
+      const applied = EffectiveTray.applyEffectToActor(effect, actor, { effectData, concentration });
+      return applied;
+    }, libWrapper.OVERRIDE)
+
+    libWrapper.register("effectivetray-ng", "dnd5e.applications.components.EffectApplicationElement.prototype.buildTargetListEntry", function({ uuid, name}) {
+      // Override checking isOwner
+      const actor = fromUuidSync(uuid);
+      if (!game.settings.get(MODULE, "allowTarget") && !actor?.isOwner) return;
+
+      const disabled = this.targetingMode === "selected" ? " disabled" : "";
+      const checked = this.targetChecked(uuid) ? " checked" : "";
+
+      const li = document.createElement("li");
+      li.classList.add("target");
+      li.dataset.targetUuid = uuid;
+      li.innerHTML = `
+        <img class="gold-icon">
+        <div class="name-stacked">
+          <span class="title"></span>
+        </div>
+        <div class="checkbox">
+          <dnd5e-checkbox name="${uuid}"${checked}${disabled}></dnd5e-checkbox>
         </div>
       `;
-      this.replaceChildren(div);
-      this.effectsList = div.querySelector(".effects");
-      this.buildEffectsList();
-      div.querySelector(".wrapper").prepend(...this.buildTargetContainer());
-      this.targetList.addEventListener("change", this._onCheckTarget.bind(this));
-      div.addEventListener("click", this._handleClickHeader.bind(this));
+      Object.assign(li.querySelector(".gold-icon"), { alt: name, src: actor.img });
+      li.querySelector(".name-stacked .title").append(name);
+
+      return li;
+    }, libWrapper.OVERRIDE)
+
+    libWrapper.register("effectivetray-ng", "dnd5e.applications.components.EffectApplicationElement.prototype.connectedCallback", function(wrapped) {
+      wrapped();
 
       // Override to hide target selection if there are no targets
       if (!game.settings.get(MODULE, "allowTarget") && !game.user.isGM) {
@@ -70,115 +118,59 @@ export default class EffectiveEAE extends dnd5e.applications.components.EffectAp
         const ownership = EffectiveTray.ownershipCheck(targets);
         if (!ownership) this.targetSourceControl.hidden = true;
       };
-    }
+    }, libWrapper.WRAPPER);
 
-    this.targetingMode = this.targetSourceControl.hidden ? "selected" : "targeted";
+    /**
+     * Handle clicking the apply effect button.
+     * @param {PointerEvent} event  Triggering click event.
+     * @throws {Error}              If the effect could not be applied.
+     */
+    libWrapper.register("effectivetray-ng", "dnd5e.applications.components.EffectApplicationElement.prototype._onApplyEffect", async function(event) {
+      event.preventDefault();
+      const effect = this.chatMessage.getAssociatedItem()?.effects.get(event.target.closest("[data-id]")?.dataset.id);
+      if (!effect) return;
 
-    //Handle scrolling
-    if (!game.settings.get(MODULE, "scrollOnExpand")) return;
-    let delay = true;
-    EffectiveTray._scroll(messageId, delay);
-  }
+      // Override to accomodate helper params
+      let effectData, concentration = null;
+      effectData = {
+        flags: {
+          dnd5e: {
+            scaling: this.chatMessage.getFlag("dnd5e", "scaling"),
+            spellLevel: this.chatMessage.getFlag("dnd5e", "use.spellLevel")
+          }
+        }
+      };
+      concentration = this.chatMessage.getAssociatedActor()?.effects
+        .get(this.chatMessage.getFlag("dnd5e", "use.concentrationId"));
 
-  /* -------------------------------------------- */
-
-  /** @override */
-  buildTargetListEntry({ uuid, name }) {
-
-    // Override checking isOwner
-    const actor = fromUuidSync(uuid);
-    if (!game.settings.get(MODULE, "allowTarget") && !actor?.isOwner) return;
-
-    const disabled = this.targetingMode === "selected" ? " disabled" : "";
-    const checked = this.targetChecked(uuid) ? " checked" : "";
-
-    const li = document.createElement("li");
-    li.classList.add("target");
-    li.dataset.targetUuid = uuid;
-    li.innerHTML = `
-      <img class="gold-icon">
-      <div class="name-stacked">
-        <span class="title"></span>
-      </div>
-      <div class="checkbox">
-        <dnd5e-checkbox name="${uuid}"${checked}${disabled}></dnd5e-checkbox>
-      </div>
-    `;
-    Object.assign(li.querySelector(".gold-icon"), { alt: name, src: actor.img });
-    li.querySelector(".name-stacked .title").append(name);
-
-    return li;
-  }
-
-  /* -------------------------------------------- */
-  /*  Event Handlers                              */
-  /* -------------------------------------------- */
-
-  /**
-   * Handle applying an Active Effect to a Token.
-   * @param {ActiveEffect5e} effect      The effect to apply.
-   * @param {Actor5e} actor              The actor.
-   * @returns {Promise<ActiveEffect5e>}  The created effect.
-   * @protected
-   */
-  /** @override */
-  async _applyEffectToActor(effect, actor, { effectData, concentration }) {
-    const applied = EffectiveTray.applyEffectToActor(effect, actor, { effectData, concentration });
-    return applied;
-  }
-
-  /* -------------------------------------------- */
-
-  /**
-   * Handle clicking the apply effect button.
-   * @param {PointerEvent} event  Triggering click event.
-   * @throws {Error}              If the effect could not be applied.
-   */
-  /** @override */
-  async _onApplyEffect(event) {
-    event.preventDefault();
-    const effect = this.chatMessage.getAssociatedItem()?.effects.get(event.target.closest("[data-id]")?.dataset.id);
-    if (!effect) return;
-
-    // Override to handle tray collapse behavior
-    const tray = event.target.closest('.effects-tray');
-    EffectiveTray._checkTray(tray);
-
-    // Override to accomodate helper params
-    let effectData, concentration = null;
-    effectData = {
-      flags: {
-        dnd5e: {
-          scaling: this.chatMessage.getFlag("dnd5e", "scaling"),
-          spellLevel: this.chatMessage.getFlag("dnd5e", "use.spellLevel")
+      const unownedTargets = [];
+      for (const target of this.targetList.querySelectorAll("[data-target-uuid]")) {
+        const actor = fromUuidSync(target.dataset.targetUuid);
+        if (!actor || !target.querySelector("dnd5e-checkbox")?.checked) continue;
+        try {
+          if (actor.isOwner) {
+            this._applyEffectToActor(effect, actor, { effectData, concentration });
+          } else {
+            if (game.settings.get(MODULE, 'allowTarget')) unownedTargets.push(target.dataset.targetUuid);
+          }
+        } catch (err) {
+          Hooks.onError("EffectApplicationElement._applyEffectToToken", err, { notify: "warn", log: "warn" });
         }
       }
-    };
-    concentration = this.chatMessage.getAssociatedActor()?.effects
-      .get(this.chatMessage.getFlag("dnd5e", "use.concentrationId"));
 
-    const unownedTargets = [];
-    for (const target of this.targetList.querySelectorAll("[data-target-uuid]")) {
-      const actor = fromUuidSync(target.dataset.targetUuid);
-      if (!actor || !target.querySelector("dnd5e-checkbox")?.checked) continue;
-      try {
-        if (actor.isOwner) await this._applyEffectToActor(effect, actor, { effectData, concentration });
-        else {
-          if (game.settings.get(MODULE, 'allowTarget')) unownedTargets.push(target.dataset.targetUuid);
-        }
-      } catch (err) {
-        Hooks.onError("EffectApplicationElement._applyEffectToToken", err, { notify: "warn", log: "warn" });
+      this.querySelector(".collapsible").dispatchEvent(new PointerEvent("click", { bubbles: true, cancelable: true }));
+
+      // Unowned targets handling
+      if (!game.settings.get(MODULE, 'allowTarget')) return;
+      if (!game.users.activeGM) return ui.notifications.warn(game.i18n.localize("EFFECTIVETRAY.NOTIFICATION.NoActiveGMEffect"));
+      const source = effect.uuid;
+      const con = concentration?.id;
+      const caster = this.chatMessage.getAssociatedActor().uuid;
+      await game.socket.emit(SOCKET_ID, { type: "effect", data: { source, targets: unownedTargets, effectData, con, caster } });
+
+      if ( game.settings.get("dnd5e", "autoCollapseChatTrays") === "manual" ) {
+        this.open = true;
       }
-    }
-
-    this.querySelector(".collapsible").dispatchEvent(new PointerEvent("click", { bubbles: true, cancelable: true }));
-
-    // Unowned targets handling
-    if (!game.settings.get(MODULE, 'allowTarget')) return;
-    if (!game.users.activeGM) return ui.notifications.warn(game.i18n.localize("EFFECTIVETRAY.NOTIFICATION.NoActiveGMEffect"));
-    const source = effect.uuid;
-    const con = concentration?.id;
-    const caster = this.chatMessage.getAssociatedActor().uuid;
-    await game.socket.emit(SOCKET_ID, { type: "effect", data: { source, targets: unownedTargets, effectData, con, caster } });
+    }, libWrapper.OVERRIDE);
   }
 }

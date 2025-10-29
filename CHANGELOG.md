@@ -1,5 +1,7 @@
 # devel
 
+* rewrote the application trays; instead of building its own, the module now uses the system provided trays and modifies them using libwrapper
+* removed obsolete “Scroll on Expand” setting
 * removed “Don’t Close Trays on Apply” setting; this is handled by the system’s “Collapse Trays in Chat” setting.
 * removed “Remove ‘Apply effect to Actor’” and “Allow Application of Transfer Effets” setting; the former was a workaround that is no longer needed, and the latter was a workaround for that workaround
 

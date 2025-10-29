@@ -20,90 +20,26 @@
 
 import { MODULE } from "./const.mjs";
 import EffectiveDamageApplication from "./damage-application.mjs";
+import EffectiveEffectApplication from "./effect-application.mjs";
 
 export class EffectiveTray {
   static init() {
-
-    // Register trays for visiblity checking in the chat log
-    Hooks.once("setup", () => {
-        dnd5e.documents.ChatMessage5e.TRAY_TYPES.push("effective-damage-application", "effective-effect-application");
-      }
-    )
-
-    // Modify the effects tray
-    if (!game.settings.get(MODULE, "systemDefault")) {
-      EffectiveTray._effectTrayOverride();
-    }
-
-    // Add dependent effect to a concentration effect.
-    Hooks.on("createActiveEffect", EffectiveTray.#addDependent);
 
     // Modify the damage tray
     if (!game.settings.get(MODULE, "damageDefault")) {
       EffectiveDamageApplication.init();
     }
 
-    // Handle expand/collapse/scroll
-    //Hooks.on("dnd5e.renderChatMessage", EffectiveTray._collapseHandler);
-
-    // Handle the system's expand/collapse logic
-    //Hooks.on("dnd5e.renderChatMessage", EffectiveTray._collapseTrays);
-    const collapseSetting = game.settings.get("dnd5e", "autoCollapseChatTrays")
-    if (collapseSetting === "older" || collapseSetting === "never") {
-      //Hooks.on("ready", EffectiveTray._readyScroll);
+    // Modify the effects tray
+    if (!game.settings.get(MODULE, "systemDefault")) {
+      EffectiveEffectApplication.init();
     }
+
+    // Add dependent effect to a concentration effect.
+    Hooks.on("createActiveEffect", EffectiveTray.#addDependent);
 
     // Misc
     Hooks.on("preCreateActiveEffect", EffectiveTray._enchantmentSpellLevel);
-  }
-
-  static _effectTrayOverride() {
-    /**
-     * Override the display of the effects tray with effects the user can apply.
-     * Refer to dnd5e for full documentation.
-     * @param {HTMLLiElement} html  The chat card.
-     * @protected
-     */
-    libWrapper.register("effectivetray-ng", "dnd5e.documents.ChatMessage5e.prototype._enrichUsageEffects", function(html) {
-      const message = this;
-      const item = message.getAssociatedItem();
-      if (!item) return;
-
-      // Additional effect detection
-      let effects;
-      if (message.getFlag("dnd5e", "messageType") === "usage") {
-        effects = message?.getFlag("dnd5e", "use.effects")?.map(id => item?.effects.get(id))
-      } else {
-        if (message.getFlag("dnd5e", "roll.type")) return;
-        effects = item?.effects.filter(e => (e.type !== "enchantment") && !e.getFlag("dnd5e", "rider"));
-      }
-      if (!effects?.length || foundry.utils.isEmpty(effects)) return;
-      if (!effects.some(e => e.type !== "enchantment")) return;
-
-      // Handle filtering based on actor
-      const actor = message.getAssociatedActor();
-      if (game.settings.get(MODULE, "ignoreNPC") && actor?.type === "npc" && !actor?.isOwner) return;
-      const filterDis = game.settings.get(MODULE, "filterDisposition");
-      if (filterDis) {
-        const token = game.scenes?.get(message.speaker?.scene)?.tokens?.get(message.speaker?.token);
-        if (token && filterDis === 3 && token.disposition <= CONST.TOKEN_DISPOSITIONS.NEUTRAL && !token?.isOwner) return;
-        else if (token && filterDis === 2 && token.disposition <= CONST.TOKEN_DISPOSITIONS.HOSTILE && !token?.isOwner) return;
-        else if (token && filterDis === 1 && token.disposition <= CONST.TOKEN_DISPOSITIONS.SECRET && !token?.isOwner) return;
-      }
-      const filterPer = game.settings.get(MODULE, "filterPermission");
-      if (filterPer) {
-        if (filterPer === 1 && !actor?.testUserPermission(game.user, CONST.DOCUMENT_OWNERSHIP_LEVELS.LIMITED)) return;
-        else if (filterPer === 2 && !actor?.testUserPermission(game.user, CONST.DOCUMENT_OWNERSHIP_LEVELS.OBSERVER)) return;
-        else if (filterPer === 3 && !actor?.isOwner) return;
-        else if (filterPer === 4 && !game.user.isGM) return;
-      }
-
-      // Replace the effects tray
-      // FIXXME: check if we can instead just modify the system effects tray
-      const effectApplication = document.createElement("effective-effect-application");
-      effectApplication.effects = effects;
-      return html.querySelector(".message-content").appendChild(effectApplication);
-    }, libWrapper.OVERRIDE);
   }
 
   /**
@@ -117,78 +53,6 @@ export class EffectiveTray {
     if (game.user.id !== userId) return;
     const concentration = await fromUuid(concentrationUuid);
     if (concentration) concentration.addDependent(effect);
-  }
-
-  /**
-   * Handle expand/collapse/scroll.
-   * @param {ChatMessage5e} message The message on which the tray resides.
-   * @param {HTMLElement} html      HTML contents of the message.
-   */
-  static async _collapseHandler(message, html) {
-    await new Promise(r => setTimeout(r, 10));
-
-    // Handle tray collapse behavior
-    const tray = html.querySelector('.card-tray');
-    if (!tray) return;
-    const buttons = tray.querySelectorAll("button.apply-damage, li.effect:has(.apply-effect)");
-    if (buttons) for (const button of buttons) {
-      button.addEventListener('click', (event) => {
-        // "never" means "after use"; actual never is "manual"
-        if (["never", "always"].includes(game.settings.get("dnd5e", "autoCollapseChatTrays"))) {
-          if (html.querySelector(".card-tray.et-uncollapsed")) tray.classList.toggle("et-uncollapsed");
-        } else {
-          event.preventDefault();
-          tray.classList.remove("collapsed");
-          tray.classList.add("et-uncollapsed");
-        };
-      });
-    };
-    const upper = tray?.querySelector(".roboto-upper");
-    const el = html.querySelector('effective-damage-application, damage-application, effective-effect-application, effect-application');
-    if (upper) upper.addEventListener('click', () => {
-      if (html.querySelector(".et-uncollapsed")) {
-        tray.classList.toggle("et-uncollapsed");
-        tray.classList.remove("collapsed");
-        el.toggleAttribute("open");
-      };
-    });
-
-    // Check and see if the damage tray needs to be scrolled
-    if (!game.settings.get(MODULE, "scrollOnExpand")) return;
-    if (upper) {
-      const mid = message.id;
-      upper.addEventListener('click', () => {
-        if (html.querySelector(".card-tray.collapsed")) EffectiveTray._scroll(mid);
-      });
-    };
-  }
-
-  /**
-   * Adapted from dnd5e
-   * Handle collapsing or expanding trays depending on user settings.
-   * @param {HTMLElement} html  Rendered contents of the message.
-   */
-  static async _collapseTrays(message, html) {
-    await new Promise(r => setTimeout(r, 10));
-    let collapse;
-    switch (game.settings.get("dnd5e", "autoCollapseChatTrays")) {
-      case "always": collapse = true; break;
-      case "never": collapse = false; break;
-      // Collapse chat message trays older than 5 minutes
-      case "older": collapse = message.timestamp < Date.now() - (5 * 60 * 1000); break;
-    };
-    for (const tray of html.querySelectorAll(".card-tray, .effects-tray")) {
-      tray.classList.toggle("collapsed", collapse);
-    };
-    for (const element of html.querySelectorAll("effective-damage-application, effective-effect-application")) {
-      element.toggleAttribute("open", !collapse);
-    };
-  }
-
-  // Scroll chat to bottom on ready if any trays have been expanded
-  static async _readyScroll() {
-    await new Promise(r => setTimeout(r, 108));
-    window.ui.chat.scrollBottom({ popout: true });
   }
 
   /**
@@ -206,15 +70,6 @@ export class EffectiveTray {
       await new Promise(r => setTimeout(r, 256));
       window.ui.sidebar.popouts.chat.scrollBottom();
     };
-  }
-
-  /**
-   * Sort tokens into owned and unowned categories.
-   * @param {HTMLElement} tray The tray to be collapsed or not collapsed
-   */
-  static _checkTray(tray) {
-    tray.classList.add("collapsed");
-    tray.classList.remove("et-uncollapsed");
   }
 
   /* -------------------------------------------- */
