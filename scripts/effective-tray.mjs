@@ -29,11 +29,6 @@ export class EffectiveTray {
       }
     )
 
-    // Override header click behavior
-    if (game.settings.get(MODULE, "dontCloseOnPress")) {
-      EffectiveTray._effectTrayClickOverride();
-    }
-
     // Modify the effects tray
     if (!game.settings.get(MODULE, "systemDefault")) {
       EffectiveTray._effectTrayOverride();
@@ -60,31 +55,6 @@ export class EffectiveTray {
     // Misc
     Hooks.on("preCreateItem", EffectiveTray._removeTransfer);
     Hooks.on("preCreateActiveEffect", EffectiveTray._enchantmentSpellLevel);
-  }
-
-  /* -------------------------------------------- */
-  /*  Tray Handling                               */
-  /* -------------------------------------------- */
-
-  static _effectTrayClickOverride() {
-    const cls = dnd5e.applications.components.EffectApplicationElement;
-    class handler extends cls {
-
-      /**
-       * Override to handle clicks to the collapsible header.
-       * @param {PointerEvent} event  Triggering click event.
-       */
-      /** @override */
-      _handleClickHeader(event) {
-        event.preventDefault();
-        event.stopImmediatePropagation();
-        if (!event.target.closest(".collapsible-content")) {
-          if (event.target.closest('.et-uncollapsed')) this.removeAttribute("open");
-          else this.toggleAttribute("open");
-        }
-      }
-    }
-    cls.prototype._handleClickHeader = handler.prototype._handleClickHeader;
   }
 
   static _effectTrayOverride() {
@@ -268,10 +238,8 @@ export class EffectiveTray {
    * @param {HTMLElement} tray The tray to be collapsed or not collapsed
    */
   static _checkTray(tray) {
-    if (!game.settings.get(MODULE, "dontCloseOnPress")) {
-      tray.classList.add("collapsed");
-      tray.classList.remove("et-uncollapsed");
-    };
+    tray.classList.add("collapsed");
+    tray.classList.remove("et-uncollapsed");
   }
 
   /* -------------------------------------------- */
