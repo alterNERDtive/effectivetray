@@ -57,55 +57,53 @@ export class EffectiveTray {
   }
 
   static _effectTrayOverride() {
-    const cls = dnd5e.documents.ChatMessage5e;
-    class enricher extends cls {
+    /**
+     * Override the display of the effects tray with effects the user can apply.
+     * Refer to dnd5e for full documentation.
+     * @param {HTMLLiElement} html  The chat card.
+     * @protected
+     */
+    libWrapper.register("effectivetray-ng", "dnd5e.documents.ChatMessage5e.prototype._enrichUsageEffects", function(...args) {
+      const html = args[0]; // I have no idea why referring to the parameter by name doesn’t work …
+      const message = this;
+      const item = message.getAssociatedItem();
+      if (!item) return;
 
-      /**
-       * Override the display of the effects tray with effects the user can apply.
-       * Refer to dnd5e for full documentation.
-       * @param {HTMLLiElement} html  The chat card.
-       * @protected
-       */
-      /** @override */
-      _enrichUsageEffects(html) {
-        const message = this;
-        const item = message.getAssociatedItem();
-        if (!item) return;
-        let effects;
-        if (message.getFlag("dnd5e", "messageType") === "usage") {
-          effects = message?.getFlag("dnd5e", "use.effects")?.map(id => item?.effects.get(id))
-        } else {
-          if (message.getFlag("dnd5e", "roll.type")) return;
-          effects = item?.effects.filter(e => (e.type !== "enchantment") && !e.getFlag("dnd5e", "rider"));
-        }
-        if (!effects?.length || foundry.utils.isEmpty(effects)) return;
-        if (!effects.some(e => e.type !== "enchantment")) return;
-        const actor = message.getAssociatedActor();
-
-        // Handle filtering
-        if (game.settings.get(MODULE, "ignoreNPC") && actor?.type === "npc" && !actor?.isOwner) return;
-        const filterDis = game.settings.get(MODULE, "filterDisposition");
-        if (filterDis) {
-          const token = game.scenes?.get(message.speaker?.scene)?.tokens?.get(message.speaker?.token);
-          if (token && filterDis === 3 && token.disposition <= CONST.TOKEN_DISPOSITIONS.NEUTRAL && !token?.isOwner) return;
-          else if (token && filterDis === 2 && token.disposition <= CONST.TOKEN_DISPOSITIONS.HOSTILE && !token?.isOwner) return;
-          else if (token && filterDis === 1 && token.disposition <= CONST.TOKEN_DISPOSITIONS.SECRET && !token?.isOwner) return;
-        }
-        const filterPer = game.settings.get(MODULE, "filterPermission");
-        if (filterPer) {
-          if (filterPer === 1 && !actor?.testUserPermission(game.user, CONST.DOCUMENT_OWNERSHIP_LEVELS.LIMITED)) return;
-          else if (filterPer === 2 && !actor?.testUserPermission(game.user, CONST.DOCUMENT_OWNERSHIP_LEVELS.OBSERVER)) return;
-          else if (filterPer === 3 && !actor?.isOwner) return;
-          else if (filterPer === 4 && !game.user.isGM) return;
-        }
-
-        // Replace the effects tray
-        const effectApplication = document.createElement("effective-effect-application");
-        effectApplication.effects = effects;
-        return html.querySelector(".message-content").appendChild(effectApplication);
+      // Additional effect detection
+      let effects;
+      if (message.getFlag("dnd5e", "messageType") === "usage") {
+        effects = message?.getFlag("dnd5e", "use.effects")?.map(id => item?.effects.get(id))
+      } else {
+        if (message.getFlag("dnd5e", "roll.type")) return;
+        effects = item?.effects.filter(e => (e.type !== "enchantment") && !e.getFlag("dnd5e", "rider"));
       }
-    }
-    cls.prototype._enrichUsageEffects = enricher.prototype._enrichUsageEffects;
+      if (!effects?.length || foundry.utils.isEmpty(effects)) return;
+      if (!effects.some(e => e.type !== "enchantment")) return;
+
+      // Handle filtering based on actor
+      const actor = message.getAssociatedActor();
+      if (game.settings.get(MODULE, "ignoreNPC") && actor?.type === "npc" && !actor?.isOwner) return;
+      const filterDis = game.settings.get(MODULE, "filterDisposition");
+      if (filterDis) {
+        const token = game.scenes?.get(message.speaker?.scene)?.tokens?.get(message.speaker?.token);
+        if (token && filterDis === 3 && token.disposition <= CONST.TOKEN_DISPOSITIONS.NEUTRAL && !token?.isOwner) return;
+        else if (token && filterDis === 2 && token.disposition <= CONST.TOKEN_DISPOSITIONS.HOSTILE && !token?.isOwner) return;
+        else if (token && filterDis === 1 && token.disposition <= CONST.TOKEN_DISPOSITIONS.SECRET && !token?.isOwner) return;
+      }
+      const filterPer = game.settings.get(MODULE, "filterPermission");
+      if (filterPer) {
+        if (filterPer === 1 && !actor?.testUserPermission(game.user, CONST.DOCUMENT_OWNERSHIP_LEVELS.LIMITED)) return;
+        else if (filterPer === 2 && !actor?.testUserPermission(game.user, CONST.DOCUMENT_OWNERSHIP_LEVELS.OBSERVER)) return;
+        else if (filterPer === 3 && !actor?.isOwner) return;
+        else if (filterPer === 4 && !game.user.isGM) return;
+      }
+
+      // Replace the effects tray
+      // FIXXME: check if we can instead just modify the system effects tray
+      const effectApplication = document.createElement("effective-effect-application");
+      effectApplication.effects = effects;
+      return html.querySelector(".message-content").appendChild(effectApplication);
+    }, libWrapper.OVERRIDE);
   }
 
   /**
