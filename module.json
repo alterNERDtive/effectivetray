@@ -1,7 +1,7 @@
 {
   "id": "effectivetray-ng",
   "title": "Effective Tray NG",
-  "version": "13.350-5.1.10-20251029",
+  "version": "13.350-5.1.10-rc1",
   "compatibility": {
     "minimum": "13",
     "verified": "13.350",
