@@ -148,17 +148,6 @@ export class ModuleSettings {
       onChange: false
     });
 
-    game.settings.register(MODULE, "dontCloseOnPress", {
-      name: "EFFECTIVETRAY.DontCloseOnPressSettingName",
-      hint: "EFFECTIVETRAY.DontCloseOnPressSettingHint",
-      scope: "client",
-      config: true,
-      type: Boolean,
-      default: false,
-      requiresReload: true,
-      onChange: false
-    });
-
     game.settings.register(MODULE, "scrollOnExpand", {
       name: "EFFECTIVETRAY.ScrollOnExpandSettingName",
       hint: "EFFECTIVETRAY.ScrollOnExpandSettingHint",
