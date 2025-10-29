@@ -53,7 +53,6 @@ export class EffectiveTray {
     }
 
     // Misc
-    Hooks.on("preCreateItem", EffectiveTray._removeTransfer);
     Hooks.on("preCreateActiveEffect", EffectiveTray._enchantmentSpellLevel);
   }
 
@@ -78,9 +77,6 @@ export class EffectiveTray {
         } else {
           if (message.getFlag("dnd5e", "roll.type")) return;
           effects = item?.effects.filter(e => (e.type !== "enchantment") && !e.getFlag("dnd5e", "rider"));
-        }
-        if (!game.settings.get(MODULE, "allowTransfer")) {
-          effects = effects?.filter(e => !e.transfer);
         }
         if (!effects?.length || foundry.utils.isEmpty(effects)) return;
         if (!effects.some(e => e.type !== "enchantment")) return;
@@ -329,28 +325,6 @@ export class EffectiveTray {
   /* -------------------------------------------- */
   /*  Misc. Methods                               */
   /* -------------------------------------------- */
-
-  /**
-   * Remove transfer and suspended from all effects with duration
-   * @param {Item} item The item with the effect from which to remove "transfer": true and "disabled": true.
-   */
-  static _removeTransfer(item) {
-    if (!game.settings.get(MODULE, "removeTransfer")) return;
-    const effects = item.effects.contents;
-    if (!effects) return;
-    for (const effect of effects) {
-      if (effect.type === "enchantment") continue;
-      if (effect.getFlag("dnd5e", "rider")) continue;
-      const transfer = effect.transfer;
-      const duration = effect.duration;
-      const disabled = effect.disabled;
-      if (transfer && (duration.seconds || duration.turns || duration.rounds)) {
-        let updates = { "transfer": !transfer };
-        if (disabled) foundry.utils.mergeObject(updates, { "disabled": !disabled });
-        effect.updateSource(updates);
-      };
-    };
-  }
 
   /**
    * Before an effect is created, if it is an enchantment from a spell,
