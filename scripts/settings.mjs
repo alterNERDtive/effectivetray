@@ -136,16 +136,5 @@ export class ModuleSettings {
       requiresReload: true,
       onChange: false
     });
-
-    game.settings.register(MODULE, "scrollOnExpand", {
-      name: "EFFECTIVETRAY.ScrollOnExpandSettingName",
-      hint: "EFFECTIVETRAY.ScrollOnExpandSettingHint",
-      scope: "client",
-      config: true,
-      type: Boolean,
-      default: true,
-      requiresReload: false,
-      onChange: false
-    });
   }
 }

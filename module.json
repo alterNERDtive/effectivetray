@@ -8,6 +8,7 @@
     "maximum": "13.999"
   },
   "esmodules": [
+    "scripts/libwrapper-shim/shim.js",
     "scripts/setup.mjs"
   ],
   "styles": [
@@ -22,6 +23,16 @@
           "minimum": "5.1.0",
           "verified": "5.1.10",
           "maximum": "5.1.9999"
+        }
+      }
+    ],
+    "recommends": [
+      {
+        "id": "lib-wrapper",
+        "type": "module",
+        "compatibility": {
+          "minimum": "1.13.0.0",
+          "verfied": "1.13.4.0"
         }
       }
     ]
