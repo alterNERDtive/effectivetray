@@ -15,10 +15,17 @@ Allows users to use the damage tray for selected tokens that they own, and for t
 - **Filtering** based on actor type, permissions, and token disposition. This prevents users from seeing and interacting with effects of certain origins, depending on GM preference (no filtering is performed by default).
 - **Multiple Effects with Concentration**: Allow multiple effects to be applied from spells with concentration (off by default).
 - **Use Default Trays**: Adds settings (off by default) to use the default effects and damage trays. Only the features *below* this setting will function if a given tray is in its default mode.
-- **Scroll on Expand**: Scroll chat to bottom when expanding a tray that is at the bottom (experimental, on by default).
 
 ## Additional Features
 - Flags enchantment effects with their spellLevel.
+___
+## **Technical Details**
+
+**Scope:** This module modifies the system’s damage and effect application trays in chat messages using [libWrapper](https://github.com/ruipin/fvtt-lib-wrapper) to allows all users, not just GMs or the originating user, to apply effects and damage. Since regular users cannot directly affect unowned tokens, the module communicates changes via socket to an active GM client.
+
+**License:** GPLv3. Original code base by etiquettestartshere: MIT.
+
+**Additional Info:** Some code has been adapted from [dnd5e](https://github.com/foundryvtt/dnd5e), particularly the extension of the tray custom html elements, and unifying module and system logic for collapsing or expanding trays.
 
 ## API
 Now includes three helper functions exposed in the global scope under `effectiv`, `effectiv.applyEffect`, `effectiv.applyDamage` and `effective.partitionTargets`. These functions *have not been heavily tested* and are included now in the hopes that, if someone wants to use them, they will also test them for issues.
@@ -150,13 +157,3 @@ Hooks.call("effectiv.preApplyEffect", effectData, actor, concentration);
  */
 Hooks.callAll("effectiv.applyEffect", effectData, actor, concentration);
 ```
-___
-###### **Technical Details**
-
-**Scope:** Replaces the effects tray in chat messages with a similar one that allows all users, not just GMs or the chat message's creator, to apply active effects to tokens they control (and have selected) by looping over all messages in the "dnd5e.renderChatMessage" hook. Extends the system's damage application element class to allow users who are not GMs to use the damage tray. Additionally, transmits target target and change data via sockets to allow an active GM client to apply effects (or damage) to a non GM user's targets.
-
-**License:** MIT License.
-
-**Additional Info:** Thanks to Zhell for help with adding actors to a set and lots of other stuff (and for the github action), and to Flix for much encouragement. Thanks also to ChaosOS for help with sockets, and DrentalBot for help with suppressing the system's context menu.
-
-Some code has been adapted from [dnd5e](https://github.com/foundryvtt/dnd5e), particularly the extension of the tray custom html elements, and unifying module and system logic for collapsing or expanding trays.

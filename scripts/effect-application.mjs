@@ -154,7 +154,7 @@ export default class EffectiveEffectApplication {
             if (game.settings.get(MODULE, 'allowTarget')) unownedTargets.push(target.dataset.targetUuid);
           }
         } catch (err) {
-          Hooks.onError("EffectApplicationElement._applyEffectToToken", err, { notify: "warn", log: "warn" });
+          Hooks.onError("EffectiveEffectApplication._applyEffectToToken", err, { notify: "warn", log: "warn" });
         }
       }
 
