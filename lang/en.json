@@ -2,8 +2,6 @@
   "EFFECTIVETRAY": {
     "AllowTargetSettingName": "Transfer to Target",
     "AllowTargetSettingHint": "Allow users to transfer effects to targets they do not own.",
-    "AllowTransferSettingName": "Allow Application of Transfer Effects",
-    "AllowTransferSettingHint": "Allows applying effects that have the “Apply to Actor” option set, e.g. the Rage effect from the SRD; will allow applying these to other actors(!) as well. Will apply a copy of the effect. If you set this, you probably want to disable the “Remove ‘Apply Effect to Actor’” setting.",
     "DamageDefaultSettingName": "Use Default Damage Tray",
     "DamageDefaultSettingHint": "Retain default system behavior (only the GM can see damage trays).",
     "DamageTargetSettingName": "Damage Target",
@@ -25,8 +23,6 @@
       "NoActiveGMEffect": "There is no active GM. An active GM is required to create effects on targets you do not own.",
       "NoTarget": "You don't have a target."
     },
-    "RemoveTransferSettingName": "Remove 'Apply Effect to Actor'",
-    "RemoveTransferSettingHint": "On the time of creation (i.e. drag & drop, item grant advancement), remove 'Apply Effect to Actor' from effects on items that have a duration to allow for normal use of the timer.",
     "ScrollOnExpandSettingName": "Scroll on Expand",
     "ScrollOnExpandSettingHint": "Scroll chat to bottom when expanding a tray that is at the bottom.",
     "SystemDefaultSettingName": "Use Default Effects Tray",

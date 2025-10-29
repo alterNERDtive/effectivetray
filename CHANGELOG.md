@@ -1,6 +1,7 @@
 # devel
 
 * removed “Don’t Close Trays on Apply” setting; this is handled by the system’s “Collapse Trays in Chat” setting.
+* removed “Remove ‘Apply effect to Actor’” and “Allow Application of Transfer Effets” setting; the former was a workaround that is no longer needed, and the latter was a workaround for that workaround
 
 # 13.348-5.1.5-1 (2025-09-08)
 
