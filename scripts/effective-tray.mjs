@@ -188,12 +188,13 @@ export class EffectiveTray {
     const buttons = tray.querySelectorAll("button.apply-damage, li.effect:has(.apply-effect)");
     if (buttons) for (const button of buttons) {
       button.addEventListener('click', (event) => {
-        if (game.settings.get(MODULE, "dontCloseOnPress")) {
+        // "never" means "after use"; actual never is "manual"
+        if (["never", "always"].includes(game.settings.get("dnd5e", "autoCollapseChatTrays"))) {
+          if (html.querySelector(".card-tray.et-uncollapsed")) tray.classList.toggle("et-uncollapsed");
+        } else {
           event.preventDefault();
           tray.classList.remove("collapsed");
           tray.classList.add("et-uncollapsed");
-        } else {
-          if (html.querySelector(".card-tray.et-uncollapsed")) tray.classList.toggle("et-uncollapsed");
         };
       });
     };

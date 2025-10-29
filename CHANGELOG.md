@@ -1,3 +1,7 @@
+# devel
+
+* removed “Don’t Close Trays on Apply” setting; this is handled by the system’s “Collapse Trays in Chat” setting.
+
 # 13.348-5.1.5-1 (2025-09-08)
 
 * changed version scheme to include verified Foundry and 5e system versions (similar to https://github.com/thatlonelybugbear/automated-conditions-5e)
