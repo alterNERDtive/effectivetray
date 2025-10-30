@@ -1,4 +1,4 @@
-# devel
+# 13.350-5.1.10-1
 
 * rewrote the application trays; instead of building its own, the module now uses the system provided trays and modifies them using libwrapper
 * removed obsolete “Scroll on Expand” setting
