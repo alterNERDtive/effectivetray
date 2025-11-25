@@ -2,7 +2,7 @@
   "id": "effectivetray-ng",
   "title": "Effective Tray NG",
   "description": "A module for dnd5e on foundryvtt allowing players to make full use of the effects and damage trays, instead of restricting them to DM only.",
-  "version": "13.351-5.1.10-2",
+  "version": "13.351-5.2.0-1",
   "compatibility": {
     "minimum": "13",
     "verified": "13.351",
@@ -21,9 +21,9 @@
         "id": "dnd5e",
         "type": "system",
         "compatibility": {
-          "minimum": "5.1.0",
-          "verified": "5.1.10",
-          "maximum": "5.1.9999"
+          "minimum": "5.2.0",
+          "verified": "5.2.0",
+          "maximum": "5.2.9999"
         }
       }
     ],
