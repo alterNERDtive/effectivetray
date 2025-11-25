@@ -1,3 +1,7 @@
+# devel
+
+* fixed damage application tray not working correctly on 5e 5.1.x (#23)
+
 # 13.350-5.1.10-1
 
 * rewrote the application trays; instead of building its own, the module now uses the system provided trays and modifies them using libwrapper
