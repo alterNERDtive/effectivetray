@@ -71,7 +71,18 @@ export default class EffectiveDamageApplication {
           types.push(data);
         }
       }
-      const changeSources = types.reduce((acc, config) => acc + this.getChangeSourceButton(config, targetOptions), "");
+      const changeSources = types.reduce((acc, {type, change, icon}) => {
+        const { label, pressed } = this.getChangeSourceOptions(type, change, targetOptions);
+        acc += `
+          <button class="change-source unbutton" type="button" data-type="${type}" data-change="${change}"
+                  data-tooltip aria-label="${label}" aria-pressed="${pressed}">
+            <dnd5e-icon src="${icon}" inert></dnd5e-icon>
+            <i class="fa-solid fa-slash" inert></i>
+            <i class="fa-solid fa-arrow-turn-down" inert></i>
+          </button>
+        `;
+        return acc;
+      }, "");
 
       const li = document.createElement("li");
       li.classList.add("target");
@@ -80,7 +91,7 @@ export default class EffectiveDamageApplication {
         <img class="gold-icon">
         <div class="name-stacked">
           <span class="title"></span>
-          <span class="subtitle">${changeSources}</span>
+          ${changeSources ? `<span class="subtitle">${changeSources}</span>` : ""}
         </div>
         <div class="calculated damage">
           ${total}
@@ -92,7 +103,7 @@ export default class EffectiveDamageApplication {
       `;
       Object.assign(li.querySelector(".gold-icon"), { alt: name, src: actor.img });
       li.querySelector(".name-stacked .title").append(name);
-
+      
       const menu = li.querySelector("menu");
       for (const [value, display] of MULTIPLIERS) {
         const entry = document.createElement("li");
