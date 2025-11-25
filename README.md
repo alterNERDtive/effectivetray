@@ -1,5 +1,5 @@
 # Effective Tray NG (for D&D Fifth Edition)
-A module for dnd5e on foundryvtt that allows the effects and damage trays to be used more effectively.
+A module for dnd5e on foundryvtt allowing players to make full use of the effects and damage trays, instead of restricting them to DM only.
 
 Based on [Effective Tray](https://github.com/etiquettestartshere/effectivetray) by [@etiquettestartshere](https://github.com/etiquettestartshere).
 
