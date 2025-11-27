@@ -129,19 +129,20 @@ export default class EffectiveEffectApplication {
       event.preventDefault();
       const effect = this.chatMessage.getAssociatedItem()?.effects.get(event.target.closest("[data-id]")?.dataset.id);
       if (!effect) return;
+      const concentration = this.chatMessage.getAssociatedActor()?.effects
+        .get(this.chatMessage.getFlag("dnd5e", "use.concentrationId"));
+      const origin = concentration ?? effect;
 
       // Override to accomodate helper params
-      let effectData, concentration = null;
-      effectData = {
+      const effectData = {
         flags: {
           dnd5e: {
+            dependentOn: origin.uuid,
             scaling: this.chatMessage.getFlag("dnd5e", "scaling"),
             spellLevel: this.chatMessage.getFlag("dnd5e", "use.spellLevel")
           }
         }
       };
-      concentration = this.chatMessage.getAssociatedActor()?.effects
-        .get(this.chatMessage.getFlag("dnd5e", "use.concentrationId"));
 
       const unownedTargets = [];
       for (const target of this.targetList.querySelectorAll("[data-target-uuid]")) {
