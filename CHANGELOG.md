@@ -1,3 +1,9 @@
+# devel
+
+* fixed trays not expanding/collapsing properly in some cases
+* fixed concentration tracking to use the “new” registry-based behaviour introduced into the system ages ago
+* reverted damage application tray back to 5.2 behaviour
+
 # 13.351-5.1.10-2
 
 * fixed damage application tray not working correctly on 5e 5.1.x (#23)
