@@ -41,9 +41,6 @@ export default class EffectiveDamageApplication {
       const rolls = message.rolls.filter(r => r instanceof CONFIG.Dice.DamageRoll);
       if (!rolls.length) return;
       const damageApplication = document.createElement("damage-application");
-      if (game.settings.get("dnd5e", "autoCollapseChatTrays") !== "always") {
-        damageApplication.setAttribute("open", "");
-      }
       damageApplication.damages = dnd5e.dice.aggregateDamageRolls(rolls, { respectProperties: true }).map(roll => ({
         value: roll.total,
         type: roll.options.type,
