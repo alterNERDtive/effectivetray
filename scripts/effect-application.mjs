@@ -159,7 +159,9 @@ export default class EffectiveEffectApplication {
         }
       }
 
-      this.querySelector(".collapsible").dispatchEvent(new PointerEvent("click", { bubbles: true, cancelable: true }));
+      if ( game.settings.get("dnd5e", "autoCollapseChatTrays") !== "manual" ) {
+        this.querySelector(".collapsible").dispatchEvent(new PointerEvent("click", { bubbles: true, cancelable: true }));
+      }
 
       // Unowned targets handling
       if (!game.settings.get(MODULE, 'allowTarget')) return;
@@ -168,10 +170,6 @@ export default class EffectiveEffectApplication {
       const con = concentration?.id;
       const caster = this.chatMessage.getAssociatedActor().uuid;
       await game.socket.emit(SOCKET_ID, { type: "effect", data: { source, targets: unownedTargets, effectData, con, caster } });
-
-      if ( game.settings.get("dnd5e", "autoCollapseChatTrays") === "manual" ) {
-        this.open = true;
-      }
     }, libWrapper.OVERRIDE);
   }
 }
