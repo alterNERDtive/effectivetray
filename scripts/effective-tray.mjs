@@ -117,14 +117,7 @@ export class EffectiveTray {
       if (hookData === false) return;
       effectData = hookData;
 
-      // Find an owner of the concentration effect and request that they add the dependent effect.
-      const context = { parent: actor };
-      if (concentration && !concentration.isOwner) {
-        const userId = game.users.find(u => u.active && concentration.testUserPermission(u, "OWNER"))?.id;
-        if (userId) context.effectiv = { userId: userId, concentrationUuid: concentration.uuid };
-      }
-      const applied = await ActiveEffect.implementation.create(effectData, context);
-      if (concentration && concentration.isOwner) await concentration.addDependent(applied);
+      const applied = await ActiveEffect.implementation.create(effectData, { parent: actor });
 
       // Call the post hook
       Hooks.callAll("effectiv.applyEffect", effectData, actor, concentration);
