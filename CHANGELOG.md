@@ -1,4 +1,4 @@
-# devel
+# 13.351-5.2.0-1
 
 * fixed trays not expanding/collapsing properly in some cases
 * fixed concentration tracking to use the “new” registry-based behaviour introduced into the system ages ago
