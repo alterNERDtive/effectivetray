@@ -1,4 +1,9 @@
 # Effective Tray NG (for D&D Fifth Edition)
+
+![Foundry v13](https://img.shields.io/badge/Foundry-v13-informational?logo=foundryvirtualtabletop)
+![D&D 5e 5.2](https://img.shields.io/badge/D%26D%205e-5.2-informational?logo=dungeonsanddragons)
+[![Discord](https://img.shields.io/discord/385315806323408937?logo=discord&label=Discord)](https://discord.alternerd.tv)
+
 A module for dnd5e on foundryvtt allowing players to make full use of the effects and damage trays, instead of restricting them to DM only.
 
 Based on [Effective Tray](https://github.com/etiquettestartshere/effectivetray) by [@etiquettestartshere](https://github.com/etiquettestartshere).
