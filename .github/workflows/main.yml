@@ -11,11 +11,6 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
-      # Combine CSS files into a single CSS file
-      - name: Combine CSS files
-        run: |
-         cat styles/*.css > effectivetray.css
-
       # Get part of the tag after the `v`.
       - name: Extract tag version number
         id: get_version
@@ -35,7 +30,6 @@ jobs:
           changelog: https://github.com/${{github.repository}}/releases/tag/${{github.event.release.tag_name}}
           download: https://github.com/${{github.repository}}/releases/download/${{github.event.release.tag_name}}/module.zip
           manifest: https://github.com/${{github.repository}}/releases/latest/download/module.json
-          styles: "[\"effectivetray.css\"]"
           esmodules: "[\"effectivetray.mjs\"]"
 
         # Set up Node
@@ -56,7 +50,7 @@ jobs:
 
       # Create zip file.
       - name: Create ZIP archive
-        run: zip -r ./module.zip module.json effectivetray.mjs effectivetray.css lang/ LICENSE CHANGELOG.md README.md
+        run: zip -r ./module.zip module.json effectivetray.mjs lang/ LICENSE CHANGELOG.md README.md
 
       # Create a release for this specific version.
       - name: Update Release with Files
