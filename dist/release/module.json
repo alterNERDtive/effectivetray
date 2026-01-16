@@ -1,0 +1,61 @@
+{
+  "id": "effectivetray-ng",
+  "title": "Effective Tray NG",
+  "description": "A module for D&D5e on Foundry VTT that allows players to make full use of the effects and damage trays, instead of restricting them to DM only.",
+  "version": "13.351.5.2.4.1",
+  "compatibility": {
+    "minimum": "13",
+    "verified": "13.351",
+    "maximum": "13.999"
+  },
+  "esmodules": [
+    "scripts/libwrapper-shim/shim.js",
+    "effectivetray-ng.mjs"
+  ],
+  "relationships": {
+    "systems": [
+      {
+        "id": "dnd5e",
+        "type": "system",
+        "compatibility": {
+          "minimum": "5.0.0",
+          "verified": "5.2.4",
+          "maximum": "5.2.9999"
+        }
+      }
+    ],
+    "recommends": [
+      {
+        "id": "lib-wrapper",
+        "type": "module",
+        "compatibility": {
+          "minimum": "1.13.0.0",
+          "verified": "1.13.4.0"
+        }
+      }
+    ]
+  },
+  "languages": [
+    {
+      "lang": "en",
+      "name": "English",
+      "path": "lang/en.json",
+      "flags": {}
+    }
+  ],
+  "url": "https://git.alternerd.tv/Foundry-VTT/effectivetray-ng",
+  "bugs": "https://git.alternerd.tv/Foundry-VTT/effectivetray-ng/issues",
+  "changelog": "https://git.alternerd.tv/Foundry-VTT/effectivetray-ng/releases/tag/13.351.5.2.4.1",
+  "download": "https://git.alternerd.tv/Foundry-VTT/effectivetray-ng/releases/download/13.351.5.2.4.1/effectivetray-ng.zip",
+  "manifest": "https://git.alternerd.tv/Foundry-VTT/effectivetray-ng/releases/download/latest/module.json",
+  "license": "LICENSE",
+  "readme": "README.md",
+  "authors": [
+    {
+      "name": "alterNERDtive",
+      "discord": "alternerdtive",
+      "url": "https://alternerd.tv",
+      "flags": {}
+    }
+  ]
+}
